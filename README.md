@@ -20,7 +20,7 @@ post-update.sample        pre-push.sample           update.sample
 Remove `.sample` keyword at `prepare-commit-msg.sample` and then let's enter the following command to gain executable privileges.
 
 ```
-chmod +x /.git/hooks/prepare-commit-msg
+chmod +x .git/hooks/prepare-commit-msg
 ```
 
 And then open the file using vi editor or text editor, etc
@@ -66,16 +66,22 @@ if [ -z "$BRANCHES_TO_SKIP" ]; then
   BRANCHES_TO_SKIP=(master develop)
 fi
 
+# BRANCH_NAME will be "jira/TEST-000001"
 BRANCH_NAME=$(git symbolic-ref --short HEAD)
+
+# BRANCH_TYPE will be "jira"
 BRANCH_TYPE="${BRANCH_NAME%%/*}"
 
-# Specified the branch to get prefix. ex) jira/iOS-112, jira/iOS-113
+# Specified the branch to get prefix.
 if [ ${BRANCH_TYPE} != "jira" ]; then
   exit 0
 fi
 
+# BRANCH_NAME will be "TEST-000001"
 BRANCH_NAME="${BRANCH_NAME##*/}"
-JIRA_ID=`echo $BRANCH_NAME | egrep -o 'iOS-[0-9]+'`
+
+# JIRA_ID will be "TEST-000001" it's will be prefix tag such as [TEST-000001]
+JIRA_ID=`echo $BRANCH_NAME | egrep -o 'TEST-[0-9]+'`
 
 BRANCH_EXCLUDED=$(printf "%s\n" "${BRANCHES_TO_SKIP[@]}" | grep -c "^$BRANCH_NAME$")
 BRANCH_IN_COMMIT=$(grep -c "$JIRA_ID" $1)
@@ -99,5 +105,5 @@ Now you can see the prefix when after you tried to commit message.
 
 >> git log --oneline
 
-66f4f72 (HEAD -> jira/iOS-112) [iOS-112] for check to prefix
+66f4f72 (HEAD -> jira/TEST-000001) [TEST-000001] for check to prefix
 ```
